@@ -1,17 +1,16 @@
 function onOpen(e) {
     DocumentApp.getUi().createAddonMenu()
-        .addItem('Start', 'handleRequirementsText')
+        .addItem('Start', 'main')
         .addToUi();
-    showSidebar()
   }
   
   function onInstall(e) {
     onOpen(e);
   }
   
-  function handleRequirementsText() {
-  
-    var body = DocumentApp.getActiveDocument().getBody();
+  function handleRequirementsText(body) {
+
+    var recap = {};
     
     var result = getJSON();
     result.forEach(element => {
@@ -34,19 +33,53 @@ function onOpen(e) {
           let endText = startText + (element["key"].length - 1);
           let elemText = found.getElement().asText();
 
-          if (elemText.getLinkUrl() == null){
-            elemText.setLinkUrl(startText, endText, element["canonicalUrl"]);
-          }
-          else {
-            DocumentApp.getUi().alert(elemText.getLinkUrl());
-          }
+          elemText.setLinkUrl(startText, endText, element["canonicalUrl"]);
+          recap[element["key"]] = element["canonicalUrl"];
 
           current = found;
         }
       }
     });
+
+    return recap;
   }
+
+  function writeRecapHTML(recap) {
+    let recapHTML = "";
+    recapHTML += "<h3>Requirements :</h3>"
+
+    recapHTML += "<ul>"
+    for (let element in recap) {
+      Logger.log(recap[element]);
+      recapHTML += `<li><a href="${recap[element]}" target="_blank">${element}</a></li>`;
+    }
+    recapHTML += "</ul>"
+
+    var ui = HtmlService.createHtmlOutput(`<!DOCTYPE html><meta charset="UTF-8"><html><body>${recapHTML}</body></html>`).setTitle("Requirements").setSandboxMode(HtmlService.SandboxMode.IFRAME);
+    DocumentApp.getUi().showSidebar(ui);
+  }
+
+  function writeRecapEOF(recap) {
+    var doc = DocumentApp.getActiveDocument();
   
+    var body = doc.getBody();
+
+    body.appendPageBreak();
+
+    var recapTitle = "Requirements :\n";
+
+    var title = body.appendParagraph(recapTitle)
+    var titleText = title.editAsText();
+    title.setHeading(DocumentApp.ParagraphHeading.HEADING2);
+    //titleText.setFontSize(titleText.getFontSize() * 2);
+
+    for (element in recap){
+      var paragraph = body.appendParagraph(element);
+
+      paragraph.setLinkUrl(recap[element]);
+    }
+  }
+
   function getJSON() {
       var url = "https://ww1.requirementyogi.cloud/nuitdelinfo/search?offset=OFFSET_VAL"
       var result = []
@@ -59,4 +92,14 @@ function onOpen(e) {
       } while (current < response["total"]);
       
       return result;
+  }
+
+  function main() {
+    var body = DocumentApp.getActiveDocument().getBody();
+    
+    recap = handleRequirementsText(body)
+    if (recap != {}){
+      //writeRecapHTML(recap);
+      writeRecapEOF(recap);
+    }
   }
