@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Requirement Parsing</title>
+</head>
+
+<body onload="getAdvice()">
+
+  <h3>Summary</h3>
+  <label>
+    <input type="checkbox" name="summaryCheckbox" value="EOF"> EOF
+  </label>
+  <label>
+    <input type="checkbox" name="summaryCheckbox" value="Sidebar"> Sidebar
+  </label>
+
+  <br>
+  <br>
+
+  <button onclick="cancelFunction()">Cancel</button>
+  <button onclick="goHandler()">Go</button>
+
+  <br>
+  <br>
+
+  <h3>Here is an idea to save our beautiful planet :</h3>
+  <p id="eco_idea"></p>
+  <button onclick="getAdvice()">New</button>
+  
+
+  <script>
+    function getAdvice() {
+      var sentences = ["plant your own tree", "turn off the water while brushing your teeth", "use a reusable water bottle", "bring your own bags", "unplug chargers and electronics",
+      "start composting", "shop secondhand", "participate in a beach cleanup"];
+      var senStart = ["You can", "You could", "It's important to"];
+
+      let sentence = ""
+
+      sentence += senStart[Math.floor((Math.random()*senStart.length))];
+      sentence += " ";
+      sentence += sentences[Math.floor((Math.random()*sentences.length))];
+
+      document.getElementById("eco_idea").innerHTML = sentence;
+    }
+
+    function goHandler() {
+      var summaryCheckboxes = document.getElementsByName("summaryCheckbox");
+
+      var summaryValues = [summaryCheckboxes[0].checked, summaryCheckboxes[1].checked];
+
+      google.script.run.goButton(summaryValues[0], summaryValues[1]);
+    }
+
+    function cancelFunction() {
+      google.script.host.close();
+    }
+  </script>
+
+</body>
+
+</html>
