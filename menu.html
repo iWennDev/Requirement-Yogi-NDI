@@ -31,9 +31,9 @@
 
   <script>
     function getAdvice() {
-      var sentences = ["plant your own tree", "turn off the water while brushing your teeth", "use a reusable water bottle", "bring your own bags", "unplug chargers and electronics",
+      let sentences = ["plant your own tree", "turn off the water while brushing your teeth", "use a reusable water bottle", "bring your own bags", "unplug chargers and electronics",
       "start composting", "shop secondhand", "participate in a beach cleanup"];
-      var senStart = ["You can", "You could", "It's important to"];
+      let senStart = ["You can", "You could", "It's important to"];
 
       let sentence = ""
 
@@ -45,9 +45,9 @@
     }
 
     function goHandler() {
-      var summaryCheckboxes = document.getElementsByName("summaryCheckbox");
+      let summaryCheckboxes = document.getElementsByName("summaryCheckbox");
 
-      var summaryValues = [summaryCheckboxes[0].checked, summaryCheckboxes[1].checked];
+      let summaryValues = [summaryCheckboxes[0].checked, summaryCheckboxes[1].checked];
 
       google.script.run.goButton(summaryValues[0], summaryValues[1]);
     }

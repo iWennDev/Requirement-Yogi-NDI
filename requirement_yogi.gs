@@ -7,12 +7,12 @@ function onInstall(e) {
 }
 
 function openMenu() {
-  var ui = HtmlService.createHtmlOutputFromFile("menu.html").setTitle("Requirement Parsing");
+  let ui = HtmlService.createHtmlOutputFromFile("menu.html").setTitle("Requirement Parsing");
   DocumentApp.getUi().showSidebar(ui);
 }
 
 function goButton(eof, sidebar) {
-  var body = DocumentApp.getActiveDocument().getBody();
+  let body = DocumentApp.getActiveDocument().getBody();
   
   recap = handleRequirementsText(body)
   if (recap != {}){
@@ -27,9 +27,9 @@ function goButton(eof, sidebar) {
 
 function handleRequirementsText(body) {
 
-  var recap = {};
+  let recap = {};
   
-  var result = getJSON();
+  let result = getJSON();
   result.forEach(element => {
     let finishedPage = false;
     let current = null;
@@ -72,33 +72,32 @@ function writeRecapHTML(recap) {
   }
   recapHTML += "</ul>"
 
-  var ui = HtmlService.createHtmlOutput(`<!DOCTYPE html><meta charset="UTF-8"><html><body>${recapHTML}</body></html>`).setTitle("Requirements").setSandboxMode(HtmlService.SandboxMode.IFRAME);
+  let ui = HtmlService.createHtmlOutput(`<!DOCTYPE html><meta charset="UTF-8"><html><body>${recapHTML}</body></html>`).setTitle("Requirements").setSandboxMode(HtmlService.SandboxMode.IFRAME);
   DocumentApp.getUi().showSidebar(ui);
 }
 
 function writeRecapEOF(recap) {
-  var doc = DocumentApp.getActiveDocument();
 
-  var body = doc.getBody();
+  let body = DocumentApp.getActiveDocument().getBody();
 
   body.appendPageBreak();
 
-  var recapTitle = "Requirements :";
+  let recapTitle = "Requirements :";
 
-  var title = body.appendParagraph(recapTitle)
+  let title = body.appendParagraph(recapTitle)
   title.setHeading(DocumentApp.ParagraphHeading.HEADING2);
 
 
-  for (var element in recap) {
+  for (let element in recap) {
     let listItem = body.appendListItem(element).setGlyphType(DocumentApp.GlyphType.BULLET);
     listItem.setLinkUrl(recap[element]);
   }
 }
 
 function getJSON() {
-    var url = "https://ww1.requirementyogi.cloud/nuitdelinfo/search?offset=OFFSET_VAL"
-    var result = []
-    var current = 0
+    let url = "https://ww1.requirementyogi.cloud/nuitdelinfo/search?offset=OFFSET_VAL"
+    let result = []
+    let current = 0
     do {
       var response = UrlFetchApp.fetch(url.replace("OFFSET_VAL", current.toString()), {'muteHttpExceptions': true});
       var parsed = JSON.parse(response);
