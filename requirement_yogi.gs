@@ -7,21 +7,33 @@ function onInstall(e) {
 }
 
 function openMenu() {
-  let ui = HtmlService.createHtmlOutputFromFile("menu.html").setTitle("Requirement Parsing");
-  DocumentApp.getUi().showSidebar(ui);
+    try {
+        let ui = HtmlService.createHtmlOutputFromFile("menu.html").setTitle("Requirement Parsing");
+        DocumentApp.getUi().showSidebar(ui);
+    } catch (error) {
+        Logger.log("Error opening menu: " + error);
+        DocumentApp.getUi().alert("Error opening the menu. Please try again.");
+        throw new Error("Error opening the menu. Please try again.");
+
+    }
 }
 
 function goButton(eof, sidebar) {
-  let body = DocumentApp.getActiveDocument().getBody();
-  
-  recap = handleRequirementsText(body)
-  if (recap != {}){
-    if (eof){
-      writeRecapEOF(recap);
-    }
-    if (sidebar) {
-      writeRecapHTML(recap);
-    }
+  try {
+      let body = DocumentApp.getActiveDocument().getBody();
+      recap = handleRequirementsText(body);
+      if (recap != {}) {
+          if (eof) {
+              writeRecapEOF(recap);
+          }
+          if (sidebar) {
+              writeRecapHTML(recap);
+          }
+      }
+  } catch (error) {
+      Logger.log("Error processing requirements: " + error);
+      DocumentApp.getUi().alert("Error processing requirements. Please try again.");
+      throw new Error("Error processing requirements. Please try again.");
   }
 }
 
@@ -68,7 +80,7 @@ function writeRecapHTML(recap) {
   recapHTML += "<ul>"
   for (let element in recap) {
     Logger.log(recap[element]);
-    recapHTML += `<li><a href="${recap[element]}" target="_blank">${element}</a></li>`;
+    recapHTML += `<li><a href="${encodeURI(recap[element])}" target="_blank">${element}</a></li>`;
   }
   recapHTML += "</ul>"
 
@@ -95,6 +107,7 @@ function writeRecapEOF(recap) {
 }
 
 function getJSON() {
+  try {
     let url = "https://ww1.requirementyogi.cloud/nuitdelinfo/search?offset=OFFSET_VAL"
     let result = []
     let current = 0
@@ -106,4 +119,10 @@ function getJSON() {
     } while (current < response["total"]);
     
     return result;
+  }
+  catch (error) {
+    Logger.log("Error fetching data from the API: " + error);
+    DocumentApp.getUi().alert("Failed to fetch data from the API. Please check your internet connection and try again.");
+    throw new Error("Failed to fetch data from the API. Please check your internet connection and try again.");
+  }
 }
