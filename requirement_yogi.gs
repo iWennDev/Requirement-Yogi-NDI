@@ -1,9 +1,28 @@
 function onOpen(e) {
-  DocumentApp.getUi().createAddonMenu().addItem("Start", "main").addToUi();
+  DocumentApp.getUi().createAddonMenu().addItem("Start", "openMenu").addToUi();
 }
 
 function onInstall(e) {
   onOpen(e);
+}
+
+function openMenu() {
+  var ui = HtmlService.createHtmlOutputFromFile("menu.html").setTitle("Requirement Parsing");
+  DocumentApp.getUi().showSidebar(ui);
+}
+
+function goButton(eof, sidebar) {
+  var body = DocumentApp.getActiveDocument().getBody();
+  
+  recap = handleRequirementsText(body)
+  if (recap != {}){
+    if (eof){
+      writeRecapEOF(recap);
+    }
+    if (sidebar) {
+      writeRecapHTML(recap);
+    }
+  }
 }
 
 function handleRequirementsText(body) {
@@ -88,14 +107,4 @@ function getJSON() {
     } while (current < response["total"]);
     
     return result;
-}
-
-function main() {
-  var body = DocumentApp.getActiveDocument().getBody();
-  
-  recap = handleRequirementsText(body)
-  if (recap != {}){
-    //writeRecapHTML(recap);
-    writeRecapEOF(recap);
-  }
 }
